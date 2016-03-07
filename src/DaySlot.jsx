@@ -43,6 +43,7 @@ let DaySlot = React.createClass({
     step: React.PropTypes.number.isRequired,
     min: React.PropTypes.instanceOf(Date).isRequired,
     max: React.PropTypes.instanceOf(Date).isRequired,
+    nowIndicator: React.PropTypes.bool,
 
     allDayAccessor: accessor.isRequired,
     startAccessor: accessor.isRequired,
@@ -83,10 +84,10 @@ let DaySlot = React.createClass({
 
     let totalMin = dates.diff(min, max, 'minutes')
     let numSlots = Math.ceil(totalMin / step)
-    let children = [];
+    let timeSlots = [];
 
     for (var i = 0; i < numSlots; i++) {
-      children.push(
+      timeSlots.push(
         <div key={i} className='rbc-time-slot'/>
       )
     }
@@ -103,7 +104,7 @@ let DaySlot = React.createClass({
 
     return (
       <div {...props} className={cn('rbc-day-slot', props.className)}>
-        { children }
+        { timeSlots }
         { this.renderEvents(numSlots, totalMin) }
         {
           selecting &&
@@ -113,6 +114,7 @@ let DaySlot = React.createClass({
               </span>
             </div>
         }
+        {this.props.children}
       </div>
     );
   },

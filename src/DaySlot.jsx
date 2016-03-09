@@ -105,6 +105,7 @@ let DaySlot = React.createClass({
     return (
       <div {...props} className={cn('rbc-day-slot', props.className)}>
         { timeSlots }
+        { this.props.children }
         { this.renderEvents(numSlots, totalMin) }
         {
           selecting &&
@@ -114,7 +115,6 @@ let DaySlot = React.createClass({
               </span>
             </div>
         }
-        {this.props.children}
       </div>
     );
   },

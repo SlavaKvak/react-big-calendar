@@ -13,7 +13,7 @@ let TimeGutter = React.createClass({
   },
 
   render() {
-    let { min, max, step, timeGutterFormat, culture, nowIndicator } = this.props;
+    let { min, max, step, timeGutterFormat, culture } = this.props;
     let today = new Date()
     let totalMin = dates.diff(min, max, 'minutes')
     let numSlots = Math.ceil(totalMin / step)

@@ -6,7 +6,7 @@ new WebpackDevServer(webpack(config), {
 
   publicPath: config.output.publicPath,
   hot: true,
-  historyApiFallback: true,
+  historyApiFallback: false,
   quiet: false,
   progress: true,
   stats: {

@@ -7,6 +7,7 @@ let Basic = React.createClass({
     return (
       <BigCalendar
         events={events}
+		externalClasses={{ offRangeBackgroundCell: 'test' }}
         defaultDate={new Date(2015, 3, 1)}
       />
     )

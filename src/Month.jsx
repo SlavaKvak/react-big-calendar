@@ -188,7 +188,8 @@ let MonthView = React.createClass({
 	  
   const getAdditionalClasses = (weekDayIndex) => {
 	  let classes = '';
-	  const offRangeBackgroundCellClass = this.props.externalClasses.offRangeBackgroundCell;
+	  const externalClasses = this.props.externalClasses;
+	  const offRangeBackgroundCellClass = externalClasses ? externalClasses.offRangeBackgroundCell : '';
 	  
 	  if (offRangeBackgroundCellClass) {
 		  let isOffRange = dates.month(row[weekDayIndex]) !== dates.month(this.props.date);

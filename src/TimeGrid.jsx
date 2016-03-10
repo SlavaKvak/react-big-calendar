@@ -60,7 +60,7 @@ let TimeGrid = React.createClass({
   render() {
     let {
         events, start, end, messages
-      , startAccessor, endAccessor, allDayAccessor } = this.props;
+      , startAccessor, endAccessor, allDayAccessor, showAllDayRow } = this.props;
 
     let addGutterRef = i => ref => this._gutters[i] = ref;
 
@@ -76,10 +76,15 @@ let TimeGrid = React.createClass({
         let eStart = get(event, startAccessor)
           , eEnd = get(event, endAccessor);
 
-        if (
-             get(event, allDayAccessor)
-          || !dates.eq(eStart, eEnd, 'day')
-          || (dates.isJustDate(eStart) && dates.isJustDate(eEnd)))
+        if(!showAllDayRow && get(event, allDayAccessor)) {
+            return;
+        }
+
+        if ( showAllDayRow &&  ( 
+                get(event, allDayAccessor)
+                || !dates.eq(eStart, eEnd, 'day')
+                || (dates.isJustDate(eStart) && dates.isJustDate(eEnd))
+            ))
         {
           allDayEvents.push(event)
         }
@@ -93,37 +98,40 @@ let TimeGrid = React.createClass({
     let segments = allDayEvents.map(evt => eventSegments(evt, start, end, this.props))
     let { levels } = eventLevels(segments)
 
-    return (
-      <div className='rbc-time-view'>
-        <div ref='headerCell' className='rbc-time-header'>
-          <div className='rbc-row'>
-            <div ref={addGutterRef(0)} className='rbc-gutter-cell'/>
-            { this.renderHeader(range) }
-          </div>
-          <div className='rbc-row'>
-            <div ref={addGutterRef(1)} className='rbc-gutter-cell'>
-              { message(messages).allDay }
-            </div>
-            <div ref='allDay' className='rbc-allday-cell'>
-              <BackgroundCells
-                slots={range.length}
-                container={()=> this.refs.allDay}
-                selectable={this.props.selectable}
-              />
-              <div style={{ zIndex: 1, position: 'relative' }}>
-                { this.renderAllDayEvents(range, levels) }
-              </div>
-            </div>
-          </div>
-        </div>
-        <div ref='content' className='rbc-time-content'>
-          <TimeGutter ref='gutter' {...this.props}/>
-          {
-            this.renderEvents(range, rangeEvents)
-          }
-        </div>
-      </div>
-    );
+    const allDayRow = showAllDayRow ?
+             <div className='rbc-row'>
+               <div ref={addGutterRef(1)} className='rbc-gutter-cell'>
+                 { message(messages).allDay }
+               </div>
+               <div ref='allDay' className='rbc-allday-cell'>
+                 <BackgroundCells
+                   slots={range.length}
+                   container={()=> this.refs.allDay}
+                   selectable={this.props.selectable}
+                 />
+                 <div style={{ zIndex: 1, position: 'relative' }}>
+                   { this.renderAllDayEvents(range, levels) }
+                 </div>
+               </div>
+             </div> : null;
+
+       return (
+         <div className='rbc-time-view'>
+           <div ref='headerCell' className='rbc-time-header'>
+             <div className='rbc-row'>
+               <div ref={addGutterRef(0)} className='rbc-gutter-cell'/>
+               { this.renderHeader(range) }
+             </div>
+             {allDayRow}
+           </div>
+           <div ref='content' className='rbc-time-content'>
+             <TimeGutter ref='gutter' {...this.props}/>
+             {
+               this.renderEvents(range, rangeEvents, segments)
+             }
+           </div>
+         </div>
+       );
   },
 
   renderEvents(range, events){

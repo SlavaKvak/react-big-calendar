@@ -119,7 +119,7 @@ let DaySlot = React.createClass({
 
   renderEvents(numSlots, totalMin) {
     let {
-        events, step, min, culture, eventPropGetter
+        events, step, min, max, culture, eventPropGetter
       , selected, eventTimeRangeFormat, eventComponent
       , startAccessor, endAccessor, titleAccessor } = this.props;
 
@@ -131,6 +131,11 @@ let DaySlot = React.createClass({
     return events.map((event, idx) => {
       let start = get(event, startAccessor)
       let end = get(event, endAccessor)
+      let isStartInRange = dates.inRange(start, min, max, 'day');
+      let isEndInRange = dates.inRange(end, min, max, 'day');
+
+      start = dates.lt(start, min) ? min : start;
+      end = dates.gt(end, max) ? max : end;
       let startSlot = positionFromDate(start, min, step);
       let endSlot = positionFromDate(end, min, step);
 
@@ -140,7 +145,7 @@ let DaySlot = React.createClass({
       let style = this._slotStyle(startSlot, endSlot, lastLeftOffset)
 
       let title = get(event, titleAccessor)
-      let label = localizer.format({ start, end }, eventTimeRangeFormat, culture);
+      let label = this._getEventLabel(start, end, isStartInRange, isEndInRange);
       let _isSelected = isSelected(event, selected);
 
       if (eventPropGetter)
@@ -167,6 +172,16 @@ let DaySlot = React.createClass({
         </div>
       )
     })
+  },
+
+  _getEventLabel(start, end, isStartInRange, isEndInRange) {
+      let { min, max, culture, eventTimeRangeFormat } = this.props;
+      if(dates.eq(max, end)) {
+          end = dates.add(dates.startOf(max, 'day'), 1, 'day')
+      }
+      let label = (isStartInRange || isEndInRange) ?
+        localizer.format({ start, end }, eventTimeRangeFormat, culture)  : '';
+      return label;
   },
 
   _slotStyle(startSlot, endSlot, leftOffset){

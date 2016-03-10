@@ -197,6 +197,11 @@ let Calendar = React.createClass({
     max: PropTypes.instanceOf(Date),
 
     /**
+     * Should show all day row on month and day view
+     */
+    showAllDayRow: PropTypes.bool,
+
+    /**
      * Localizer specific formats, tell the Calendar how to format and display dates.
      */
     formats: PropTypes.shape({
@@ -295,6 +300,7 @@ let Calendar = React.createClass({
       view: views.MONTH,
       views: [views.MONTH, views.WEEK, views.DAY, views.AGENDA],
       date: now,
+      showAllDayRow: true,
 
       titleAccessor: 'title',
       allDayAccessor: 'allDay',

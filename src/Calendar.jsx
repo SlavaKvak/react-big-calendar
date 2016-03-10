@@ -290,7 +290,11 @@ let Calendar = React.createClass({
       day: PropTypes.node,
       agenda: PropTypes.node,
       showMore: PropTypes.func
-    })
+    }),
+	  
+	  externalClasses: PropTypes.shape({
+		  offRangeBackgroundCell: PropTypes.string
+	  })
   },
 
   getDefaultProps() {

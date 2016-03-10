@@ -8,6 +8,7 @@ import DaySlot from './DaySlot';
 import EventRow from './EventRow';
 import TimeGutter from './TimeGutter';
 import BackgroundCells from './BackgroundCells';
+import TimeIndicator from './TimeIndicator';
 
 import classes from 'dom-helpers/class';
 import getWidth from 'dom-helpers/query/width';
@@ -41,7 +42,8 @@ let TimeGrid = React.createClass({
     return {
       step: 30,
       min: dates.startOf(new Date(), 'day'),
-      max: dates.endOf(new Date(), 'day')
+      max: dates.endOf(new Date(), 'day'),
+      nowIndicator: false
     }
   },
 
@@ -60,7 +62,8 @@ let TimeGrid = React.createClass({
   render() {
     let {
         events, start, end, messages
-      , startAccessor, endAccessor, allDayAccessor, showAllDayRow } = this.props;
+      , startAccessor, endAccessor, allDayAccessor
+      , showAllDayRow, min, max } = this.props;
 
     let addGutterRef = i => ref => this._gutters[i] = ref;
 
@@ -98,6 +101,11 @@ let TimeGrid = React.createClass({
     let segments = allDayEvents.map(evt => eventSegments(evt, start, end, this.props))
     let { levels } = eventLevels(segments)
 
+    const today = new Date();
+    let gutterDate = dates.inRange(today, start, end, 'day') ? today : start;
+    let gutterMin = dates.merge(gutterDate, min);
+    let gutterMax = dates.merge(gutterDate, max);
+    
     const allDayRow = showAllDayRow ?
              <div className='rbc-row'>
                <div ref={addGutterRef(1)} className='rbc-gutter-cell'>
@@ -125,7 +133,9 @@ let TimeGrid = React.createClass({
              {allDayRow}
            </div>
            <div ref='content' className='rbc-time-content'>
-             <TimeGutter ref='gutter' {...this.props}/>
+          <TimeGutter ref='gutter' {...this.props}>
+            { this.renderNowIndicator(gutterMin, gutterMax) }
+          </TimeGutter>
              {
                this.renderEvents(range, rangeEvents, segments)
              }
@@ -145,18 +155,23 @@ let TimeGrid = React.createClass({
           get(event, endAccessor), 'day')
       )
 
+      const dateMin = dates.merge(date, min);
+      const dateMax = dates.merge(date, max);
+
       return (
         <DaySlot
           {...this.props }
-          min={dates.merge(date, min)}
-          max={dates.merge(date, max)}
+          min={dateMin}
+          max={dateMax}
           eventComponent={components.event}
           className={cn({ 'rbc-now': dates.eq(date, today, 'day') })}
           style={segStyle(1, this._slots)}
           key={idx}
           date={date}
           events={daysEvents}
-        />
+        >
+          {this.renderNowIndicator(dateMin, dateMax)}
+        </DaySlot>
       )
     })
   },
@@ -187,10 +202,13 @@ let TimeGrid = React.createClass({
 
   renderHeader(range){
     let { dayFormat, culture } = this.props;
+    let now = new Date();
 
     return range.map((date, i) =>
       <div key={i}
-        className='rbc-header'
+        className={cn('rbc-header', {          
+          'rbc-now': dates.eq(date, now, 'day')
+        })}
         style={segStyle(1, this._slots)}
       >
         <a href='#' onClick={this._headerClick.bind(null, date)}>
@@ -198,6 +216,15 @@ let TimeGrid = React.createClass({
         </a>
       </div>
     )
+  },
+
+  renderNowIndicator(min, max) {
+    const { nowIndicator } = this.props;
+    const now = new Date();
+
+    if (nowIndicator && dates.inRange(now, min, max, 'minutes')) {
+      return <TimeIndicator time={now} min={min} max={max} />
+    }
   },
 
   _headerClick(date, e){

@@ -131,13 +131,13 @@ let DaySlot = React.createClass({
     events.sort((a, b) => +get(a, startAccessor) - +get(b, startAccessor))
 
     return events.map((event, idx) => {
-      let start = get(event, startAccessor)
-      let end = get(event, endAccessor)
-      let isStartInRange = dates.inRange(start, min, max, 'day');
-      let isEndInRange = dates.inRange(end, min, max, 'day');
+      let startEventDate = get(event, startAccessor)
+      let endEventDate = get(event, endAccessor)
+      let isStartInRange = dates.inRange(startEventDate, min, max, 'day');
+      let isEndInRange = dates.inRange(endEventDate, min, max, 'day');
 
-      start = dates.lt(start, min) ? min : start;
-      end = dates.gt(end, max) ? max : end;
+      let start = dates.lt(startEventDate, min) ? min : startEventDate;
+      let end = dates.gt(endEventDate, max) ? max : endEventDate;
       let startSlot = positionFromDate(start, min, step);
       let endSlot = positionFromDate(end, min, step);
 
@@ -151,7 +151,7 @@ let DaySlot = React.createClass({
       let _isSelected = isSelected(event, selected);
 
       if (eventPropGetter)
-        var { style: xStyle, className } = eventPropGetter(event, start, end, _isSelected);
+        var { style: xStyle, className } = eventPropGetter(event, startEventDate, endEventDate, _isSelected);
 
       return (
         <div

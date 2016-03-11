@@ -1,9 +1,9 @@
 {
   "name": "qh-fork-react-big-calendar",
-  "version": "0.9.8",
+  "version": "1.0.2",
   "description": "Calendar! with events",
   "author": "Jason Quense <monastic.panic@gmail.com>",
-  "repository": "jquense/react-big-calendar",
+  "repository": "SlavaKvak/react-big-calendar",
   "license": "MIT",
   "main": "lib/index.js",
   "files": [

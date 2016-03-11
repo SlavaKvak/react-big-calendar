@@ -178,15 +178,27 @@ let MonthView = React.createClass({
   },
 
   renderBackground(row, idx){
-    let self = this;
-
-    function onSelectSlot({ start, end }) {
-      self._pendingSelection = self._pendingSelection
+    const onSelectSlot = ({ start, end }) => {
+      this._pendingSelection = this._pendingSelection
         .concat(row.slice(start, end + 1))
 
-      clearTimeout(self._selectTimer)
-      self._selectTimer = setTimeout(()=> self._selectDates())
+      clearTimeout(this._selectTimer)
+      this._selectTimer = setTimeout(()=> this._selectDates())
     }
+	  
+  const getAdditionalClasses = (weekDayIndex) => {
+	  let classes = '';
+	  const externalClasses = this.props.externalClasses;
+	  const offRangeBackgroundCellClass = externalClasses ? externalClasses.offRangeBackgroundCell : '';
+	  
+	  if (offRangeBackgroundCellClass) {
+		  let isOffRange = dates.month(row[weekDayIndex]) !== dates.month(this.props.date);
+
+		  classes += isOffRange ? offRangeBackgroundCellClass : '';
+	  }
+	  
+	  return classes;
+  }
 
     return (
     <BackgroundCells
@@ -195,6 +207,7 @@ let MonthView = React.createClass({
       slots={7}
       ref={r => this._bgRows[idx] = r}
       onSelectSlot={onSelectSlot}
+	  getAdditionalClasses={getAdditionalClasses}
     />
     )
   },
